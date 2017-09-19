@@ -2,6 +2,16 @@
 ### Overview
 This project contains an implementation of a Fully Convolutional Neural Network as described in [this paper](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf). This project was created as a coursework for [Udacity's Self-Driving Car Engineer Nanodegree](https://in.udacity.com/course/self-driving-car-engineer-nanodegree--nd013/?).
 
+### Result
+
+The FCN was trained for 25 epochs on an AWS GPU 3.4X server. The resulting images can be found in the processed_images folder. Here are some samples -
+
+![Sample 1](./processed_images/um_000000.png)
+
+![Sample 2](./processed_images/um_000020.png)
+
+![Sample 3](./processed_images/um_000090.png)
+
 ### Setup
 ##### Frameworks and Packages
 Make sure you have the following is installed:
