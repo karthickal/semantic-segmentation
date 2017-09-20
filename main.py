@@ -61,24 +61,25 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     """
 
     # the regularizer for the convolutional layers
-    regularizer = tf.contrib.layers.l2_regularizer(1e-3)
+    regularizer = tf.contrib.layers.l2_regularizer(0.001)
 
     # the first layer of the decoder obtained by a 1x1 convolution over the vgg16's layer 7 followed by a transpose convolution to upsample
     vgg_layer7_out_spatial = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, (1, 1), padding='same', kernel_regularizer=regularizer, name='vgg_layer7_out_spatial')
-    deconv_layer_1 = tf.layers.conv2d_transpose(vgg_layer7_out_spatial, num_classes, 4, (2, 2), padding='same', kernel_regularizer=regularizer)
+    deconv_layer_1 = tf.layers.conv2d_transpose(vgg_layer7_out_spatial, num_classes, 4, (2, 2), padding='same',
+                                                kernel_regularizer=regularizer, kernel_initializer=tf.contrib.layers.xavier_initializer())
 
     # add information from vgg16's layer 4 to obtain the second layer of the decoder and upsample
     vgg_layer4_out_spatial = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, (1, 1), padding='same', kernel_regularizer=regularizer, name='vgg_layer4_out_spatial')
     deconv_skip_layer_1 = tf.add(deconv_layer_1, vgg_layer4_out_spatial)
     deconv_layer_2 = tf.layers.conv2d_transpose(deconv_skip_layer_1, num_classes, 4, (2, 2), padding='same',
-                                                kernel_regularizer=regularizer)
+                                                kernel_regularizer=regularizer, kernel_initializer=tf.contrib.layers.xavier_initializer())
 
     # add information from vgg16's layer 3 and upsample to obtain the last layer
     vgg_layer3_out_spatial = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, (1, 1), padding='same',
                                               kernel_regularizer=regularizer, name='vgg_layer3_out_spatial')
     deconv_skip_layer_2 = tf.add(deconv_layer_2, vgg_layer3_out_spatial)
     deconv_layer_3 = tf.layers.conv2d_transpose(deconv_skip_layer_2, num_classes, 16, (8, 8), padding='same',
-                                                kernel_regularizer=regularizer)
+                                                kernel_regularizer=regularizer, kernel_initializer=tf.contrib.layers.xavier_initializer())
 
     return deconv_layer_3
 tests.test_layers(layers)
@@ -133,7 +134,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         training_loss = 0
         # get the data in batches
         for X, y in tqdm.tqdm(get_batches_fn(batch_size)):
-            loss, _ = sess.run([cross_entropy_loss, train_op], feed_dict={input_image: X, correct_label: y, keep_prob: 0.5})
+            loss, _ = sess.run([cross_entropy_loss, train_op], feed_dict={input_image: X, correct_label: y, keep_prob: 0.6})
             training_loss += loss
         print("Training Loss for Epoch {} is {}".format(i, training_loss))
 
